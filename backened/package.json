@@ -1,0 +1,19 @@
+{
+  "dependencies": {
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0"
+  },
+  "name": "backened",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type" :"module",
+  "devDependencies": {},
+  "scripts": {
+    "dev": "nodemon npm start",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
