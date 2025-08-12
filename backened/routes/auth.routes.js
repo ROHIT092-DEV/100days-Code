@@ -4,6 +4,6 @@ import { signUp } from '../controllers/auth.controllers.js';
 
 const router =  Router();
 
-router.get("/auth", signUp)
+router.post("/auth", signUp)
 
 export default router;
