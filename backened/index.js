@@ -2,6 +2,7 @@ import express from 'express'
 import dotenv from 'dotenv'
 import cors from 'cors'
 import connectDB from "./db/index.js";
+import cookieParser from 'cookie-parser';
 
 
 dotenv.config();
@@ -11,12 +12,19 @@ const PORT = process.env.PORT;
 
 app.use(express.json())
 
-app.use(cors({
-    origin: process.env.CORS_ORIGIN,
-    credentials: true
-}))
+app.use(
+  cors({
+    origin: "http://localhost:3000", // exact origin of your frontend
+    credentials: true, // allow cookies / auth headers
+  })
+);
+
+
+app.use(cookieParser()); // ✅ This is important for req.cookies
+
 
 import AuthRouter from '../backened/routes/auth.routes.js'
+
 
 app.use("/api/v1", AuthRouter);
 
