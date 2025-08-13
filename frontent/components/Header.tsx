@@ -6,20 +6,22 @@ import Link from "next/link";
 import { Button } from "./ui/button";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/useAuthStore";
+import { Menu, X } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { button } from "framer-motion/client";
+
+// import { IconGitBranch } from "@tabler/icons-react"
 
 function Header() {
+  const [isModelOpen, setIsModelOpen] = useState(false);
   const pathname = usePathname();
   const { user } = useAuthStore();
   const router = useRouter();
 
-  const navLinks = [
-    { name: "Home", href: "/" },
-    { name: "About", href: "/about" },
-    { name: "Contact", href: "/contact" },
-  ];
+  console.log(user?.role)
 
-
-    const logout = useAuthStore((state) => state.logout);
+  const logout = useAuthStore((state) => state.logout);
 
   const handleLogout = async (e: any) => {
     // e.preventDefault();
@@ -30,9 +32,8 @@ function Header() {
       });
 
       // If you store user in Zustand/context, reset it here
-    
 
-          logout(); // clears Zustand store
+      logout(); // clears Zustand store
 
       // if (res.ok) {
       //   router.push("/");
@@ -42,8 +43,13 @@ function Header() {
     }
   };
 
+  const handleSignInButton = (e: any) => {
+    router.push("/signin");
+    setIsModelOpen(false);
+  };
+
   return (
-    <header className="flex justify-between py-2 px-4">
+    <header className="flex justify-between py-2 px-4 items-center">
       {/* DeskTop View */}
 
       <Link href="/">
@@ -51,33 +57,14 @@ function Header() {
       </Link>
 
       <div className="lg:flex space-x-12 items-center hidden">
-        <div className="flex space-x-5">
-          {navLinks.map((link) => {
-            const isActive = pathname === link.href;
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`relative group px-2 py-1 font-medium transition duration-200
-              ${
-                isActive
-                  ? "text-indigo-600 dark:text-indigo-400 after:w-full"
-                  : "text-gray-700 dark:text-gray-200 after:w-0"
-              }
-              after:absolute after:left-0 after:bottom-0 after:h-0.5 after:bg-indigo-600 dark:after:bg-indigo-400
-              after:transition-all after:duration-300 group-hover:after:w-full
-            `}
-              >
-                {link.name}
-              </Link>
-            );
-          })}
-        </div>
+        <div className="space-x-4 flex">
+          {user && <Link href="/my-view" className="bg-gray-200 p-2 text-black hover:text-indigo-600 cursor-pointer rounded-sm">My View</Link>}
 
-        <div className="space-x-4">
+          {user?.role === "admin" && <Link href="/admin" className="bg-gray-200 p-2 text-black hover:text-indigo-600 cursor-pointer rounded-sm">Admin dashboard</Link>}
+
           {!user && (
             <Link href="/signup">
-              <Button className="cursor-pointer text-xs font-bold">
+              <Button variant="outline" size="sm" className="cursor-pointer">
                 SignUp
               </Button>
             </Link>
@@ -97,7 +84,8 @@ function Header() {
             </div>
           ) : (
             <Link href="/signin">
-              <Button className="cursor-pointer text-xs font-bold">
+              <Button variant="outline" size="sm" className="cursor-pointer ">
+                {/* <IconGitBranch /> */}
                 SignIn
               </Button>
             </Link>
@@ -106,6 +94,100 @@ function Header() {
       </div>
 
       {/* Phone View */}
+
+      <Button
+        onClick={() => setIsModelOpen(true)}
+        className="p-2 text-white md:hidden"
+      >
+        <Menu />
+      </Button>
+
+      <AnimatePresence>
+        {isModelOpen && (
+          <>
+            <motion.div
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsModelOpen(false)}
+            />
+
+            <motion.div
+              className="fixed top-0 left-0 h-full w-64 bg-gray-900 text-white z-50 p-6 flex flex-col"
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "tween", duration: 0.3 }}
+            >
+              <div className="flex justify-between">
+                <Link href="/">
+                  <Image src={logo} alt="" width={60} height={60} />
+                </Link>
+
+                <button
+                  className="mb-8 self-end"
+                  onClick={() => setIsModelOpen(false)}
+                >
+                  <X size={28} />
+                </button>
+              </div>
+
+              {/* Login Button */}
+
+              <div className="flex flex-col gap-2">
+                {user && (
+                  <div>
+                    <Button
+                      className="w-full text-black cursor-pointer"
+                      variant="outline"
+                      size="sm"
+                    >
+                      My View
+                    </Button>
+                  </div>
+                )}
+
+                {user?.role === "admin" && (
+                  <Button
+                    className="w-full text-black cursor-pointer"
+                    variant="outline"
+                    size="sm"
+                  >
+                    My Admin DashBoard
+                  </Button>
+                )}
+              </div>
+              <div className="flex flex-col gap-2 mt-auto">
+                {user ? (
+                  <div className="space-x-2">
+                    {user.email}
+                    <Button className="text-xs" onClick={handleLogout}>
+                      Logout
+                    </Button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={handleSignInButton}
+                    className="bg-gray-200 py-2 text-black hover:text-indigo-600 cursor-pointer rounded-sm"
+                  >
+                    SignIn
+                  </button>
+                )}
+
+                {!user && (
+                  <button
+                    onClick={handleSignInButton}
+                    className="bg-gray-200 py-2 text-black hover:text-indigo-600 cursor-pointer rounded-sm"
+                  >
+                    signUp
+                  </button>
+                )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

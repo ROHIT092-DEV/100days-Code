@@ -28,6 +28,8 @@ export default function Page() {
 
       const data = await res.json();
 
+      // console.log(data)
+
       if (res.ok) {
         setUser(data.user); // ✅ Save user in Zustand
         router.push("/"); // ✅ Redirect after login
