@@ -24,9 +24,16 @@ app.use(cookieParser()); // ✅ This is important for req.cookies
 
 
 import AuthRouter from '../backened/routes/auth.routes.js'
+import { authorizeRoles, protectRoutes } from './middleware/authMiddleware.js';
 
 
 app.use("/api/v1", AuthRouter);
+
+app.get("/hello", protectRoutes, authorizeRoles('admin'),(req, res) => {
+  return res.status(200).json({
+    message : "OK"
+  })
+})
 
 
 

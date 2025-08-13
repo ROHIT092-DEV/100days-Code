@@ -31,9 +31,22 @@ try {
     req.user = user;
     next();
 
+    
+
   
 } catch (error) {
   console.log(error)
 }
   
 }
+
+
+// ✅ Role check middleware
+export const authorizeRoles = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+    next();
+  };
+};
